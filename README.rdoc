@@ -1,0 +1,7 @@
+Installation:
+Clone into redmine/plugins directory, then run the following commands and restart Redmine:
+
+bundle install
+rake redmine:plugins:migrate RAILS_ENV=production
+
+Enter the approprite details on the plugin settings page (Admin -> Plugins -> Configure)
