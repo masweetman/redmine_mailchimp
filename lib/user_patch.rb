@@ -48,10 +48,10 @@ module UserPatch
 			    	{'FNAME' => firstname,
 			    	'LNAME' => lastname},
 			    	'html',
-			    	false,
-			    	true,
-			    	true,
-			    	false)
+			    	Setting.plugin_redmine_mailchimp[:mailchimp_double_optin],
+			    	Setting.plugin_redmine_mailchimp[:mailchimp_update_existing],
+			    	Setting.plugin_redmine_mailchimp[:mailchimp_replace_interests],
+			    	Setting.plugin_redmine_mailchimp[:mailchimp_send_welcome])
 			end
 		end
 

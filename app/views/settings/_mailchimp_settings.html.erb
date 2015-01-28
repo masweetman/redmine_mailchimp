@@ -12,6 +12,52 @@
                      value="<%= settings['mailchimp_list_id'] %>" 
              name="settings[mailchimp_list_id]" >
     </tr>
+    <tr>
+      <!-- subscribe(id, email, merge_vars = nil, email_type = 'html', double_optin = true, update_existing = false, replace_interests = true, send_welcome = false) -->
+      <th>Double Opt-in</th>
+      <td>
+        <select id="mailchimp_double_optin" 
+                value="<%= settings['mailchimp_double_optin'] %>" 
+                name="settings[mailchimp_double_optin]" >>
+          <option value=1>True</option>
+          <option value=0>False</option>
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <th>Update Existing</th>
+      <td>
+        <select id="mailchimp_update_existing" 
+                value="<%= settings['mailchimp_update_existing'] %>" 
+                name="settings[mailchimp_update_existing]" >>
+          <option value=1>True</option>
+          <option value=0>False</option>
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <th>Replace Interests</th>
+      <td>
+        <select id="mailchimp_replace_interests" 
+                value="<%= settings['mailchimp_replace_interests'] %>" 
+                name="settings[mailchimp_replace_interests]" >>
+          <option value=1>True</option>
+          <option value=0>False</option>
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <th>Send Welcome Email</th>
+      <td>
+        <select id="mailchimp_send_welcome" 
+                value="<%= settings['mailchimp_send_welcome'] %>" 
+                name="settings[mailchimp_send_welcome]" >>
+          <option value=0>False</option>
+          <option value=1>True</option>
+        </select>
+      </td>
+    </tr>
+
 <!--  Working on the ability to sync merge fields with custom fields
       <tr>
       <th>Merge Fields</th>
