@@ -12,5 +12,21 @@
                      value="<%= settings['mailchimp_list_id'] %>" 
              name="settings[mailchimp_list_id]" >
     </tr>
+<!--  Working on the ability to sync merge fields with custom fields
+      <tr>
+      <th>Merge Fields</th>
+      <% customfields = '' -%>
+      <% CustomField.where(type: 'UserCustomField').each do |customfield| -%>
+        <% customfields += '<option value="'+customfield.name+'">'+customfield.name+'</option>' -%>
+      <% end -%>
+
+      <td><% options = ('<option value="firstname">firstname</option>' +
+                        '<option value="lastname">lastname</option>' +
+                        '<option value="mail">mail</option>' +
+                        customfields).html_safe -%>
+      <%= select_tag('mailchimp_merge_fields', options, :onchange => settings['mailchimp_merge_fields']) %></td>
+    </tr>
+-->
+
   </tbody>
 </table>

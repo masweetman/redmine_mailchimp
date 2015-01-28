@@ -8,11 +8,21 @@ module UserPatch
 			unloadable
 			belongs_to :deliverable
 
+			alias_method_chain :create, :mailchimp_subscribe
 			alias_method_chain :update, :mailchimp_subscribe
+			#alias_method_chain :destroy, :mailchimp_unsubscribe
 		end
 	end
 
 	module InstanceMethods
+
+		def create_with_mailchimp_subscribe
+			create_without_mailchimp_subscribe
+			if self.active?
+				self.subscribe
+			end
+		end
+
 
 		def update_with_mailchimp_subscribe
 			update_without_mailchimp_subscribe
@@ -20,6 +30,11 @@ module UserPatch
 				self.subscribe
 			end
 		end
+
+		#def destroy_with_mailchimp_unsubscribe
+		#	self.unsubscribe
+		#	destroy_without_mailchimp_unsubscribe
+		#end
 
 		def subscribe
 			if !Setting.plugin_redmine_mailchimp[:mailchimp_api_key].empty?
