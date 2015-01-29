@@ -1,3 +1,5 @@
+This plugin allows you to keep your Redmine users synced to Mailchimp.
+
 Installation:
 Clone into redmine/plugins directory, then run the following commands and restart Redmine:
 
