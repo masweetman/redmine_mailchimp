@@ -1,6 +1,6 @@
 require 'user'
 
-module UserPatch
+module MailchimpUserPatch
 	def self.included(base)
 		base.send(:include, InstanceMethods)
 
@@ -48,14 +48,14 @@ module UserPatch
 			    	{'FNAME' => firstname,
 			    	'LNAME' => lastname},
 			    	'html',
-			    	Setting.plugin_redmine_mailchimp[:mailchimp_double_optin],
-			    	Setting.plugin_redmine_mailchimp[:mailchimp_update_existing],
-			    	Setting.plugin_redmine_mailchimp[:mailchimp_replace_interests],
-			    	Setting.plugin_redmine_mailchimp[:mailchimp_send_welcome])
+			    	!!Setting.plugin_redmine_mailchimp[:mailchimp_double_optin],
+			    	!!Setting.plugin_redmine_mailchimp[:mailchimp_update_existing],
+			    	!!Setting.plugin_redmine_mailchimp[:mailchimp_replace_interests],
+			    	!!Setting.plugin_redmine_mailchimp[:mailchimp_send_welcome])
 			end
 		end
 
 	end
 end
 
-User.send(:include, UserPatch)
+User.send(:include, MailchimpUserPatch)

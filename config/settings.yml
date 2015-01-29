@@ -1,0 +1,14 @@
+mailchimp_double_optin:
+  default: 1
+mailchimp_update_existing:
+  default: 1
+mailchimp_replace_interests:
+  default: 1
+mailchimp_send_welcome:
+  default: 0
+
+
+
+
+
+

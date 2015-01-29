@@ -2,7 +2,12 @@ Installation:
 Clone into redmine/plugins directory, then run the following commands and restart Redmine:
 
 bundle install
+
 rake redmine:plugins:migrate RAILS_ENV=production
 
-Enter the approprite details on the plugin settings page (Admin -> Plugins -> Configure)
+Then, enter the approprite details on the plugin settings page (Admin -> Plugins -> Configure)
+
+Find yer API key: http://kb.mailchimp.com/accounts/management/about-api-keys#Find-or-Generate-Your-API-Key
+
+Find yer List ID: http://kb.mailchimp.com/lists/managing-subscribers/find-your-list-id
 
