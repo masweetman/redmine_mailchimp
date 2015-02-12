@@ -45,9 +45,18 @@
   </tbody>
 </table>
 
-<% standard_user_fields = ["firstname", "lastname", "mail"] -%>
-<% user_fields = [""] + standard_user_fields + CustomField.where(type: "UserCustomField").map(&:name).uniq.sort -%>
-<% merge_fields = [""] + ["FIRST", "LAST", "EMAIL", "four", "five", "six"] -%>
+<% standard_user_fields = [] -%>
+<% user_fields = [] -%>
+<% merge_fields = [] -%>
+
+  <% @mailchimp = Mailchimp::API.new(Setting.plugin_redmine_mailchimp[:api_key]) -%>
+  <% @api_key = Setting.plugin_redmine_mailchimp[:api_key] -%>
+  <% @list_id = Setting.plugin_redmine_mailchimp[:list_id] -%>
+
+  <% standard_user_fields = ["firstname", "lastname", "mail"] -%>
+  <% user_fields = [""] + standard_user_fields + CustomField.where(type: "UserCustomField").map(&:name).uniq.sort -%>
+  <% merge_vars = @mailchimp.lists.merge_vars([@list_id]) -%>
+  <% merge_fields = [""] + merge_vars["data"].first["merge_vars"].map { |h| h.slice("tag") }.collect {|x| x["tag"]} -%>
 
 <table cellspacing=5 width=300>
   <tr>

@@ -16,9 +16,9 @@ Redmine::Plugin.register :redmine_mailchimp do
       'send_welcome' => true,
       'merge_field_0' => 'EMAIL',
       'user_field_0' => 'mail',
-      'merge_field_1' => 'FIRST',
+      'merge_field_1' => 'FNAME',
       'user_field_1' => 'firstname',
-      'merge_field_2' => 'LAST',
+      'merge_field_2' => 'LNAME',
       'user_field_2' => 'lastname'
     }, :partial => "settings/mailchimp_settings"
 
