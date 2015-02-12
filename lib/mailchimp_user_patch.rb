@@ -37,21 +37,21 @@ module MailchimpUserPatch
 		#end
 
 		def subscribe
-			if !Setting.plugin_redmine_mailchimp[:mailchimp_api_key].empty?
-				if @list_id != Setting.plugin_redmine_mailchimp[:mailchimp_list_id] || @api_key != Setting.plugin_redmine_mailchimp[:mailchimp_api_key]
-				    @mailchimp = Mailchimp::API.new(Setting.plugin_redmine_mailchimp[:mailchimp_api_key])
-				    @api_key = Setting.plugin_redmine_mailchimp[:mailchimp_api_key]
-				    @list_id = Setting.plugin_redmine_mailchimp[:mailchimp_list_id]
+			if !Setting.plugin_redmine_mailchimp[:api_key].empty?
+				if @list_id != Setting.plugin_redmine_mailchimp[:list_id] || @api_key != Setting.plugin_redmine_mailchimp[:api_key]
+				    @mailchimp = Mailchimp::API.new(Setting.plugin_redmine_mailchimp[:api_key])
+				    @api_key = Setting.plugin_redmine_mailchimp[:api_key]
+				    @list_id = Setting.plugin_redmine_mailchimp[:list_id]
 				end
 
 			    @mailchimp.lists.subscribe(@list_id, {:email => mail},
 			    	{'FNAME' => firstname,
 			    	'LNAME' => lastname},
 			    	'html',
-			    	!!Setting.plugin_redmine_mailchimp[:mailchimp_double_optin],
-			    	!!Setting.plugin_redmine_mailchimp[:mailchimp_update_existing],
-			    	!!Setting.plugin_redmine_mailchimp[:mailchimp_replace_interests],
-			    	!!Setting.plugin_redmine_mailchimp[:mailchimp_send_welcome])
+			    	!!Setting.plugin_redmine_mailchimp[:double_optin],
+			    	!!Setting.plugin_redmine_mailchimp[:update_existing],
+			    	!!Setting.plugin_redmine_mailchimp[:replace_interests],
+			    	!!Setting.plugin_redmine_mailchimp[:send_welcome])
 			end
 		end
 

@@ -2,45 +2,83 @@
   <tbody>
     <tr>
       <th>Mailchimp API Key</th>
-      <td><input type="text" id="mailchimp_api_key" 
-                 value="<%= settings['mailchimp_api_key'] %>" 
-                 name="settings[mailchimp_api_key]" >
+      <td><input type="text" id="api_key" 
+                 value="<%= settings['api_key'] %>" 
+                 name="settings[api_key]" >
     </tr>
     <tr>
       <th>Mailchimp List ID</th>
-      <td><input type="text" id="mailchimp_list_id" 
-                 value="<%= settings['mailchimp_list_id'] %>" 
-                 name="settings[mailchimp_list_id]" >
+      <td><input type="text" id="list_id" 
+                 value="<%= settings['list_id'] %>" 
+                 name="settings[list_id]" >
     </tr>
     <tr>
 
       <th>Double Opt-in</th>
       <td>
-          <%= check_box_tag "settings[mailchimp_double_optin]", true,
-          !!Setting.plugin_redmine_mailchimp[:mailchimp_double_optin] %>
+          <%= check_box_tag "settings[double_optin]", true,
+          !!Setting.plugin_redmine_mailchimp["double_optin"] %>
       </td>
     </tr>
     <tr>
       <th>Update Existing</th>
       <td>
-          <%= check_box_tag "settings[mailchimp_update_existing]", true,
-          !!Setting.plugin_redmine_mailchimp[:mailchimp_update_existing] %>
+          <%= check_box_tag "settings[update_existing]", true,
+          !!Setting.plugin_redmine_mailchimp["update_existing"] %>
       </td>
     </tr>
     <tr>
       <th>Replace Interests</th>
       <td>
-          <%= check_box_tag "settings[mailchimp_replace_interests]", true,
-          !!Setting.plugin_redmine_mailchimp[:mailchimp_replace_interests] %>
+          <%= check_box_tag "settings[replace_interests]", true,
+          !!Setting.plugin_redmine_mailchimp["replace_interests"] %>
       </td>
     </tr>
     <tr>
       <th>Send Welcome Email</th>
       <td>
-          <%= check_box_tag "settings[mailchimp_send_welcome]", true,
-          !!Setting.plugin_redmine_mailchimp[:mailchimp_send_welcome] %>
+          <%= check_box_tag "settings[send_welcome]", true,
+          !!Setting.plugin_redmine_mailchimp["send_welcome"] %>
       </td>
     </tr>
 
   </tbody>
+</table>
+
+<% standard_user_fields = ["firstname", "lastname", "mail"] -%>
+<% user_fields = [""] + standard_user_fields + CustomField.where(type: "UserCustomField").map(&:name).uniq.sort -%>
+<% merge_fields = [""] + ["FIRST", "LAST", "EMAIL", "four", "five", "six"] -%>
+
+<table cellspacing=5 width=300>
+  <tr>
+    <td align="center">
+      <strong>Mailchimp<br>Merge Field</strong>
+    </td>
+    <td align="center">
+      <strong>Redmine<br>User Field</strong>
+    </td>
+  </tr>
+
+<% i = 0 -%>
+<% while i < (merge_fields.count - 1) -%>
+  <% setting_merge_field = 'settings[merge_field_' + i.to_s + ']' -%>
+  <% setting_user_field = 'settings[user_field_' + i.to_s + ']' -%>
+  <tr>
+    <td align="center">
+      <%= select_tag(setting_merge_field,
+        options_for_select(merge_fields,
+          Setting.plugin_redmine_mailchimp["merge_field_" + i.to_s]),
+          :onchange => settings['merge_field_' + i.to_s]) %>
+    </td>
+    <td align="center">
+      <%= select_tag(setting_user_field,
+        options_for_select(user_fields,
+          Setting.plugin_redmine_mailchimp["user_field_" + i.to_s]),
+          :onchange => settings['user_field_' + i.to_s]) %>
+    </td>
+  </tr>
+  
+  <% i += 1 -%>
+<% end -%>
+
 </table>

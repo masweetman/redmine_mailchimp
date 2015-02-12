@@ -9,6 +9,17 @@ Redmine::Plugin.register :redmine_mailchimp do
   url 'https://github.com/masweetman/redmine_mailchimp.git'
   author_url 'http://michaelsweetman.com'
 
-  settings :default => {'empty' => true}, :partial => "settings/mailchimp_settings"
+  settings :default => {
+      'double_optin' => true,
+      'update_existing' => true,
+      'replace_interests' => true,
+      'send_welcome' => true,
+      'merge_field_0' => 'EMAIL',
+      'user_field_0' => 'mail',
+      'merge_field_1' => 'FIRST',
+      'user_field_1' => 'firstname',
+      'merge_field_2' => 'LAST',
+      'user_field_2' => 'lastname'
+    }, :partial => "settings/mailchimp_settings"
 
 end
