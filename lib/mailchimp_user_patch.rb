@@ -37,14 +37,11 @@ module MailchimpUserPatch
 		#end
 
 		def subscribe
-			if !Setting.plugin_redmine_mailchimp[:api_key].empty?
-				if @list_id != Setting.plugin_redmine_mailchimp[:list_id] || @api_key != Setting.plugin_redmine_mailchimp[:api_key]
-				    @mailchimp = Mailchimp::API.new(Setting.plugin_redmine_mailchimp[:api_key])
-				    @api_key = Setting.plugin_redmine_mailchimp[:api_key]
-				    @list_id = Setting.plugin_redmine_mailchimp[:list_id]
-				end
+			if !Setting.plugin_redmine_mailchimp[:api_key].nil?
+			    mailchimp = Setting.plugin_redmine_mailchimp[:mailchimp]
+			    list_id = Setting.plugin_redmine_mailchimp[:list_id]
 
-			    @mailchimp.lists.subscribe(@list_id, {:email => mail},
+			    mailchimp.lists.subscribe(list_id, {:email => mail},
 			    	{'FNAME' => firstname,
 			    	'LNAME' => lastname},
 			    	'html',
