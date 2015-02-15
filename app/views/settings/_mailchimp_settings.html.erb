@@ -5,13 +5,38 @@
       <td><input type="text" id="api_key" 
                  value="<%= settings['api_key'] %>" 
                  name="settings[api_key]" >
+        <% if !Setting.plugin_redmine_mailchimp[:api_key].nil? -%>
+          <% if !Setting.plugin_redmine_mailchimp[:api_key].empty? -%>
+            <% settings['mailchimp'] = Mailchimp::API.new(Setting.plugin_redmine_mailchimp[:api_key]) -%>
+            <% mailchimp = Setting.plugin_redmine_mailchimp[:mailchimp] -%>
+          <% end -%>
+        <% end -%>
+      </td>
     </tr>
+
+  <% if !mailchimp.nil? -%>
     <tr>
-      <th>Mailchimp List ID</th>
-      <td><input type="text" id="list_id" 
-                 value="<%= settings['list_id'] %>" 
-                 name="settings[list_id]" >
+      <th>Mailchimp List</th>
+      <td>
+            <% lists = mailchimp.lists.list -%>
+            <% list_names = [""] + lists["data"].map { |h| h.slice("name") }.collect {|x| x["name"]} -%>
+            <% list_ids = [""] + lists["data"].map { |h| h.slice("id") }.collect {|x| x["id"]} -%>
+
+            <%= select_tag('settings[list_name]',
+              options_for_select(list_names,
+                Setting.plugin_redmine_mailchimp["list_name"]),
+                :onchange => settings['list_name']) %>
+            <% if !Setting.plugin_redmine_mailchimp[:list_name].nil? -%>
+              <% index = list_names.find_index(Setting.plugin_redmine_mailchimp["list_name"]) -%>
+              <% settings['list_id'] = list_ids[index] %>
+              <% list_id = Setting.plugin_redmine_mailchimp[:list_id] -%>
+            <% end -%>
+
+      </td>
     </tr>
+  <% end -%>
+
+
     <tr>
 
       <th>Double Opt-in</th>
@@ -49,17 +74,16 @@
 <% user_fields = [] -%>
 <% merge_fields = [] -%>
 
-<% if !Setting.plugin_redmine_mailchimp[:api_key].nil? -%>
-  <% if !Setting.plugin_redmine_mailchimp[:api_key].empty? -%>
-    <% settings['mailchimp'] = Mailchimp::API.new(Setting.plugin_redmine_mailchimp[:api_key]) -%>
+<% if !Setting.plugin_redmine_mailchimp[:api_key].nil? && !Setting.plugin_redmine_mailchimp[:list_name].nil?-%>
+  <% if !Setting.plugin_redmine_mailchimp[:api_key].empty? && !Setting.plugin_redmine_mailchimp[:list_name].empty? -%>
 
-    <% mailchimp = Setting.plugin_redmine_mailchimp[:mailchimp] -%>
-    <% list_id = Setting.plugin_redmine_mailchimp[:list_id] -%>
-
-    <% standard_user_fields = ["firstname", "lastname", "mail"] -%>
-    <% user_fields = [""] + standard_user_fields + CustomField.where(type: "UserCustomField").map(&:name).uniq.sort -%>
+    <% user_fields = [""] + CustomField.where(type: "UserCustomField").map(&:name).uniq.sort -%>
     <% merge_vars = mailchimp.lists.merge_vars([list_id]) -%>
     <% merge_fields = [""] + merge_vars["data"].first["merge_vars"].map { |h| h.slice("tag") }.collect {|x| x["tag"]} -%>
+    <% merge_fields.delete("EMAIL") -%>
+    <% merge_fields.delete("FNAME") -%>
+    <% merge_fields.delete("LNAME") -%>
+    <% settings['merge_fields_count'] = merge_fields.count - 1 -%>
   <% end -%>
 <% end -%>
 
