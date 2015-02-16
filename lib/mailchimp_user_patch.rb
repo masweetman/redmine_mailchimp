@@ -37,28 +37,32 @@ module MailchimpUserPatch
 		#end
 
 		def subscribe
-			if !Setting.plugin_redmine_mailchimp[:api_key].nil?
-			    mailchimp = Setting.plugin_redmine_mailchimp[:mailchimp]
-			    list_id = Setting.plugin_redmine_mailchimp[:list_id]
-			    count = Setting.plugin_redmine_mailchimp[:merge_fields_count].to_i
-			    merge_fields = Hash.new
-			    merge_fields["FNAME"] = firstname
-			    merge_fields["LNAME"] = lastname
-			    i = 0
-			    while i < count
-			    	user_field_name = Setting.plugin_redmine_mailchimp["user_field_" + i.to_s]
-			    	user_field_value = self.custom_field_value(CustomField.find_by_name(user_field_name).id)
-			    	merge_fields[Setting.plugin_redmine_mailchimp["merge_field_" + i.to_s]] = user_field_value
-			    	i += 1
-			    end
+			begin
+				if !Setting.plugin_redmine_mailchimp[:api_key].nil?
+				    mailchimp = Setting.plugin_redmine_mailchimp[:mailchimp]
+				    list_id = Setting.plugin_redmine_mailchimp[:list_id]
+				    count = Setting.plugin_redmine_mailchimp[:merge_fields_count].to_i
+				    merge_fields = Hash.new
+				    merge_fields["FNAME"] = firstname
+				    merge_fields["LNAME"] = lastname
+				    i = 0
+				    while i < count
+				    	user_field_name = Setting.plugin_redmine_mailchimp["user_field_" + i.to_s]
+				    	user_field_value = self.custom_field_value(CustomField.find_by_name(user_field_name).id)
+				    	merge_fields[Setting.plugin_redmine_mailchimp["merge_field_" + i.to_s]] = user_field_value
+				    	i += 1
+				    end
 
-			    mailchimp.lists.subscribe(list_id, {:email => mail},
-			    	merge_fields,
-			    	'html',
-			    	!!Setting.plugin_redmine_mailchimp[:double_optin],
-			    	!!Setting.plugin_redmine_mailchimp[:update_existing],
-			    	!!Setting.plugin_redmine_mailchimp[:replace_interests],
-			    	!!Setting.plugin_redmine_mailchimp[:send_welcome])
+				    mailchimp.lists.subscribe(list_id, {:email => mail},
+				    	merge_fields,
+				    	'html',
+				    	!!Setting.plugin_redmine_mailchimp[:double_optin],
+				    	!!Setting.plugin_redmine_mailchimp[:update_existing],
+				    	!!Setting.plugin_redmine_mailchimp[:replace_interests],
+				    	!!Setting.plugin_redmine_mailchimp[:send_welcome])
+				end
+			rescue Exception => e
+				logger.error e.message
 			end
 		end
 
