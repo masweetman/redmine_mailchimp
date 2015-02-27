@@ -21,6 +21,7 @@ module MailchimpUserPatch
 			if self.active?
 				self.subscribe
 			end
+			successful_update(self)
 		end
 
 
@@ -29,6 +30,11 @@ module MailchimpUserPatch
 			if self.active?
 				self.subscribe
 			end
+			successful_update(self)
+		end
+
+		def successful_update(user)
+			call_hook(:controller_user_created_or_updated, {:user => user })
 		end
 
 		#def destroy_with_mailchimp_unsubscribe
@@ -70,3 +76,4 @@ module MailchimpUserPatch
 end
 
 User.send(:include, MailchimpUserPatch)
+User.send(:include, Redmine::Hook::Helper)
