@@ -28,14 +28,17 @@
               <% list_names = [""] + lists["data"].map { |h| h.slice("name") }.collect {|x| x["name"]} -%>
               <% list_ids = [""] + lists["data"].map { |h| h.slice("id") }.collect {|x| x["id"]} -%>
 
-              <%= select_tag('settings[list_name]',
-                options_for_select(list_names,
-                  Setting.plugin_redmine_mailchimp["list_name"]),
-                  :onchange => settings['list_name']) %>
-              <% if !Setting.plugin_redmine_mailchimp[:list_name].nil? -%>
-                <% index = list_names.find_index(Setting.plugin_redmine_mailchimp["list_name"]) -%>
-                <% settings['list_id'] = list_ids[index] %>
-                <% list_id = Setting.plugin_redmine_mailchimp[:list_id] -%>
+              <%= select_tag('settings[list_id]',
+                options_for_select(list_ids,
+                  Setting.plugin_redmine_mailchimp["list_id"]),
+                  :onchange => settings['list_ids']) %>
+
+              <% list_id = Setting.plugin_redmine_mailchimp["list_id"] -%>
+              
+              <% if !Setting.plugin_redmine_mailchimp[:list_id].nil? -%>
+                <% index = list_ids.find_index(Setting.plugin_redmine_mailchimp["list_id"]) -%>
+                <% list_name = list_names[index] %>
+                <%= list_name %>
               <% end -%>
 
         </td>
@@ -84,8 +87,8 @@
 <% merge_fields = [] -%>
 
 <% begin -%>
-<% if !Setting.plugin_redmine_mailchimp[:api_key].nil? && !Setting.plugin_redmine_mailchimp[:list_name].nil?-%>
-  <% if !Setting.plugin_redmine_mailchimp[:api_key].empty? && !Setting.plugin_redmine_mailchimp[:list_name].empty? -%>
+<% if !Setting.plugin_redmine_mailchimp[:api_key].nil? && !Setting.plugin_redmine_mailchimp[:list_id].nil?-%>
+  <% if !Setting.plugin_redmine_mailchimp[:api_key].empty? && !Setting.plugin_redmine_mailchimp[:list_id].empty? -%>
 
     <% user_fields = [""] + CustomField.where(type: "UserCustomField").map(&:name).uniq.sort -%>
     <% merge_vars = mailchimp.lists.merge_vars([list_id]) -%>
