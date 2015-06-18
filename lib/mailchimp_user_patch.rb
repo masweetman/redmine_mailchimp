@@ -45,7 +45,7 @@ module MailchimpUserPatch
 		def subscribe
 			begin
 				if !Setting.plugin_redmine_mailchimp[:api_key].nil?
-				    mailchimp = Setting.plugin_redmine_mailchimp[:mailchimp]
+				    mailchimp = Mailchimp::API.new(Setting.plugin_redmine_mailchimp[:api_key])
 				    list_id = Setting.plugin_redmine_mailchimp[:list_id]
 				    count = Setting.plugin_redmine_mailchimp[:merge_fields_count].to_i
 				    merge_fields = Hash.new

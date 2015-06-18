@@ -9,8 +9,7 @@
                    name="settings[api_key]" >
           <% if !Setting.plugin_redmine_mailchimp[:api_key].nil? -%>
             <% if !Setting.plugin_redmine_mailchimp[:api_key].empty? -%>
-              <% settings['mailchimp'] = Mailchimp::API.new(Setting.plugin_redmine_mailchimp[:api_key]) -%>
-              <% mailchimp = Setting.plugin_redmine_mailchimp[:mailchimp] -%>
+              <% mailchimp = Mailchimp::API.new(Setting.plugin_redmine_mailchimp[:api_key]) -%>
             <% end -%>
           <% end -%>
         <% rescue Exception => e -%>
