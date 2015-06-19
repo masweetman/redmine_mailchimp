@@ -24,15 +24,12 @@
         <th>Mailchimp List</th>
         <td>
               <% list_hash = {} %>
-              <% settings['list_name'] = '' if settings['list_name'].nil? %>
               <% settings['list_id'] = '' if settings['list_id'].nil? %>
               <% list_hash[''] = '' %>
               <% lists = mailchimp.lists.list -%>
               <% lists['data'].map{ |l| list_hash[l['name']] = l['id'] } -%>
 
-              <%= select_tag("settings[list_name]", options_for_select(list_hash.keys, settings['list_name']), :onchange => settings['list_name']) %>
-
-              <% settings['list_id'] = list_hash[settings['list_name']] -%>
+              <%= select_tag("settings[list_id]", options_for_select(list_hash.to_a, settings['list_id']), :onchange => settings['list_id']) %>
         </td>
       </tr>
     <% end -%>
