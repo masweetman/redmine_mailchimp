@@ -7,9 +7,9 @@
           <input type="text" id="api_key" 
                    value="<%= settings['api_key'] %>" 
                    name="settings[api_key]" >
-          <% if !Setting.plugin_redmine_mailchimp[:api_key].nil? -%>
-            <% if !Setting.plugin_redmine_mailchimp[:api_key].empty? -%>
-              <% mailchimp = Mailchimp::API.new(Setting.plugin_redmine_mailchimp[:api_key]) -%>
+          <% if !settings['api_key'].nil? -%>
+            <% if !settings['api_key'].empty? -%>
+              <% mailchimp = Mailchimp::API.new(settings['api_key']) -%>
             <% end -%>
           <% end -%>
         <% rescue Exception => e -%>
@@ -23,23 +23,16 @@
       <tr>
         <th>Mailchimp List</th>
         <td>
+              <% list_hash = {} %>
+              <% settings['list_name'] = '' if settings['list_name'].nil? %>
+              <% settings['list_id'] = '' if settings['list_id'].nil? %>
+              <% list_hash[''] = '' %>
               <% lists = mailchimp.lists.list -%>
-              <% list_names = [""] + lists["data"].map { |h| h.slice("name") }.collect {|x| x["name"]} -%>
-              <% list_ids = [""] + lists["data"].map { |h| h.slice("id") }.collect {|x| x["id"]} -%>
+              <% lists['data'].map{ |l| list_hash[l['name']] = l['id'] } -%>
 
-              <%= select_tag('settings[list_id]',
-                options_for_select(list_ids,
-                  Setting.plugin_redmine_mailchimp["list_id"]),
-                  :onchange => settings['list_ids']) %>
+              <%= select_tag("settings[list_name]", options_for_select(list_hash.keys, settings['list_name']), :onchange => settings['list_name']) %>
 
-              <% list_id = Setting.plugin_redmine_mailchimp["list_id"] -%>
-              
-              <% if !Setting.plugin_redmine_mailchimp[:list_id].nil? -%>
-                <% index = list_ids.find_index(Setting.plugin_redmine_mailchimp["list_id"]) -%>
-                <% list_name = list_names[index] %>
-                <%= list_name %>
-              <% end -%>
-
+              <% settings['list_id'] = list_hash[settings['list_name']] -%>
         </td>
       </tr>
     <% end -%>
@@ -53,28 +46,28 @@
       <th>Double Opt-in</th>
       <td>
           <%= check_box_tag "settings[double_optin]", true,
-          !!Setting.plugin_redmine_mailchimp["double_optin"] %>
+          !!settings['double_optin'] %>
       </td>
     </tr>
     <tr>
       <th>Update Existing</th>
       <td>
           <%= check_box_tag "settings[update_existing]", true,
-          !!Setting.plugin_redmine_mailchimp["update_existing"] %>
+          !!settings['update_existing'] %>
       </td>
     </tr>
     <tr>
       <th>Replace Interests</th>
       <td>
           <%= check_box_tag "settings[replace_interests]", true,
-          !!Setting.plugin_redmine_mailchimp["replace_interests"] %>
+          !!settings['replace_interests'] %>
       </td>
     </tr>
     <tr>
       <th>Send Welcome Email</th>
       <td>
           <%= check_box_tag "settings[send_welcome]", true,
-          !!Setting.plugin_redmine_mailchimp["send_welcome"] %>
+          !!settings['send_welcome'] %>
       </td>
     </tr>
 
@@ -86,12 +79,12 @@
 <% merge_fields = [] -%>
 
 <% begin -%>
-<% if !Setting.plugin_redmine_mailchimp[:api_key].nil? && !Setting.plugin_redmine_mailchimp[:list_id].nil?-%>
-  <% if !Setting.plugin_redmine_mailchimp[:api_key].empty? && !Setting.plugin_redmine_mailchimp[:list_id].empty? -%>
+<% if !settings['api_key'].nil? -%>
+  <% if !settings['api_key'].empty? && !settings['list_id'].empty? -%>
 
     <% user_fields = [""] + CustomField.where(type: "UserCustomField").map(&:name).uniq.sort -%>
-    <% merge_vars = mailchimp.lists.merge_vars([list_id]) -%>
-    <% merge_fields = [""] + merge_vars["data"].first["merge_vars"].map { |h| h.slice("tag") }.collect {|x| x["tag"]} -%>
+    <% merge_vars = mailchimp.lists.merge_vars([settings['list_id']]) -%>
+    <% merge_fields = [""] + merge_vars['data'].first['merge_vars'].map{ |m| m['tag'] } -%>
     <% merge_fields.delete("EMAIL") -%>
     <% merge_fields.delete("FNAME") -%>
     <% merge_fields.delete("LNAME") -%>
