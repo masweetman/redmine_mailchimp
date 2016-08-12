@@ -5,8 +5,8 @@
       <td>
         <% begin -%>
           <input type="text" id="api_key" 
-                   value="<%= settings['api_key'] %>" 
-                   name="settings[api_key]" >
+                 value="<%= settings['api_key'] %>" 
+                 name="settings[api_key]" >
           <% if !settings['api_key'].nil? -%>
             <% if !settings['api_key'].empty? -%>
               <% mailchimp = Mailchimp::API.new(settings['api_key']) -%>
@@ -18,28 +18,26 @@
       </td>
     </tr>
 
-  <% begin -%>
-    <% if !mailchimp.nil? -%>
-      <tr>
-        <th>Mailchimp List</th>
-        <td>
-              <% list_hash = {} %>
-              <% settings['list_id'] = '' if settings['list_id'].nil? %>
-              <% list_hash[''] = '' %>
-              <% lists = mailchimp.lists.list -%>
-              <% lists['data'].map{ |l| list_hash[l['name']] = l['id'] } -%>
+    <% begin -%>
+      <% if !mailchimp.nil? -%>
+        <tr>
+          <th>Mailchimp List</th>
+          <td>
+            <% list_hash = {} %>
+            <% settings['list_id'] = '' if settings['list_id'].nil? %>
+            <% list_hash[''] = '' %>
+            <% lists = mailchimp.lists.list -%>
+            <% lists['data'].map{ |l| list_hash[l['name']] = l['id'] } -%>
 
-              <%= select_tag("settings[list_id]", options_for_select(list_hash.to_a, settings['list_id']), :onchange => settings['list_id']) %>
-        </td>
-      </tr>
+            <%= select_tag("settings[list_id]", options_for_select(list_hash.to_a, settings['list_id']), :onchange => settings['list_id']) %>
+          </td>
+        </tr>
+      <% end -%>
+    <% rescue Exception => e -%>
+      <% flash[:error] = e.message -%>
     <% end -%>
-  <% rescue Exception => e -%>
-    <% flash[:error] = e.message -%>
-  <% end -%>
-
 
     <tr>
-
       <th>Double Opt-in</th>
       <td>
           <%= check_box_tag "settings[double_optin]", true,
@@ -78,7 +76,6 @@
 <% begin -%>
 <% if !settings['api_key'].nil? -%>
   <% if !settings['api_key'].empty? && !settings['list_id'].empty? -%>
-
     <% user_fields = [""] + CustomField.where(type: "UserCustomField").map(&:name).uniq.sort -%>
     <% merge_vars = mailchimp.lists.merge_vars([settings['list_id']]) -%>
     <% merge_fields = [""] + merge_vars['data'].first['merge_vars'].map{ |m| m['tag'] } -%>
