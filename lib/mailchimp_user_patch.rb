@@ -17,10 +17,10 @@ module MailchimpUserPatch
     def subscribe
       begin
         if self.active?
-          if !Setting.plugin_redmine_mailchimp[:api_key].nil?
-            mailchimp = Mailchimp::API.new(Setting.plugin_redmine_mailchimp[:api_key])
-            list_id = Setting.plugin_redmine_mailchimp[:list_id]
-            count = Setting.plugin_redmine_mailchimp[:merge_fields_count].to_i
+          if !Setting.plugin_redmine_mailchimp["api_key"].nil?
+            mailchimp = Mailchimp::API.new(Setting.plugin_redmine_mailchimp["api_key"])
+            list_id = Setting.plugin_redmine_mailchimp["list_id"]
+            count = Setting.plugin_redmine_mailchimp["merge_fields_count"].to_i
             merge_fields = Hash.new
             merge_fields["FNAME"] = firstname
             merge_fields["LNAME"] = lastname
@@ -35,10 +35,10 @@ module MailchimpUserPatch
             mailchimp.lists.subscribe(list_id, {:email => mail},
               merge_fields,
               'html',
-              !!Setting.plugin_redmine_mailchimp[:double_optin],
-              !!Setting.plugin_redmine_mailchimp[:update_existing],
-              !!Setting.plugin_redmine_mailchimp[:replace_interests],
-              !!Setting.plugin_redmine_mailchimp[:send_welcome])
+              !!Setting.plugin_redmine_mailchimp["double_optin"],
+              !!Setting.plugin_redmine_mailchimp["update_existing"],
+              !!Setting.plugin_redmine_mailchimp["replace_interests"],
+              !!Setting.plugin_redmine_mailchimp["send_welcome"])
           end
         end
         successful_update(self)
