@@ -20,7 +20,8 @@ module MailchimpUserPatch
           if !Setting.plugin_redmine_mailchimp["api_key"].nil?
             mailchimp = Mailchimp::API.new(Setting.plugin_redmine_mailchimp["api_key"])
             list_id = Setting.plugin_redmine_mailchimp["list_id"]
-            count = Setting.plugin_redmine_mailchimp["merge_fields_count"].to_i
+            count = 0
+            Setting.plugin_redmine_mailchimp.keys.map { |k| count += 1 if k.include? "merge_field" }
             merge_fields = Hash.new
             merge_fields["FNAME"] = firstname
             merge_fields["LNAME"] = lastname
