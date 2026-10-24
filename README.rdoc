@@ -2,13 +2,38 @@
 
 This Redmine plugin allows you to keep your Redmine users synced to Mailchimp.
 
+Version 3.0.0 requires Redmine 7.0 or higher and uses the Mailchimp Marketing API v3
+(the old "mailchimp-api" gem only supported the retired API 2.0). It has no gem dependencies.
+
 == Installation
 
 * Clone into your plugins folder: <code>git clone https://github.com/masweetman/redmine_mailchimp.git</code>
-* Run <code>bundle install</code>
 * Restart Redmine
 
 == Usage
 
-* Enter your Mailchimp API Key on the plugin settings page (Admin -> Plugins -> Configure).
-** Find your API key: http://kb.mailchimp.com/accounts/management/about-api-keys#Find-or-Generate-Your-API-Key
+* Enter your Mailchimp API Key on the plugin settings page (Admin -> Plugins -> Configure). The key must end with
+  its datacenter, e.g. <code>...-us12</code>.
+** Find your API key: https://mailchimp.com/help/about-api-keys/
+* Choose the list, then map Mailchimp merge fields to Redmine user custom fields. FNAME and LNAME are always sent.
+
+Every time an active user is saved, the user is added to (or updated in) the list. A failing Mailchimp request is
+logged and never prevents the user from being saved.
+
+== Settings
+
+Double Opt-in:: New members get the "pending" status and receive Mailchimp's confirmation email.
+Update Existing:: Existing members have their merge fields updated. When off, existing members are left untouched.
+                  Members that unsubscribed are never resubscribed.
+
+== Upgrading from 2.x
+
+* Existing settings (API key, list, options and merge field mapping) are kept as they are.
+* The "Replace Interests" and "Send Welcome Email" options were removed: API v3 has no equivalent. The welcome email is
+  configured in the Mailchimp list settings.
+* The plugin fires the <code>controller_user_created_or_updated</code> hook on every user save, which other plugins
+  (e.g. redmine_fraternity_members) rely on. It now also fires when Mailchimp is not configured or fails.
+
+== Tests
+
+  RAILS_ENV=test bin/rails redmine:plugins:test NAME=redmine_mailchimp

@@ -1,124 +1,41 @@
-<table>
-  <tbody>
-    <tr>
-      <th>Mailchimp API Key</th>
-      <td>
-        <% begin -%>
-          <input type="text" id="api_key" 
-                 value="<%= settings['api_key'] %>" 
-                 name="settings[api_key]" >
-          <% if !settings['api_key'].nil? -%>
-            <% if !settings['api_key'].empty? -%>
-              <% mailchimp = Mailchimp::API.new(settings['api_key']) -%>
-            <% end -%>
-          <% end -%>
-        <% rescue Exception => e -%>
-            <% flash[:error] = e.message -%>
-        <% end -%>
-      </td>
-    </tr>
+<% lookup = RedmineMailchimp::SettingsLookup.new(settings) %>
+<% lists = lookup.api_key? ? lookup.lists : [] %>
+<% tags = lookup.merge_field_tags %>
+<% user_fields = [''] + lookup.user_field_names %>
+<% merge_tags = [''] + tags %>
 
-    <% begin -%>
-      <% if !mailchimp.nil? -%>
-        <tr>
-          <th>Mailchimp List</th>
-          <td>
-            <% list_hash = {} %>
-            <% settings['list_id'] = '' if settings['list_id'].nil? %>
-            <% list_hash[''] = '' %>
-            <% lists = mailchimp.lists.list -%>
-            <% lists['data'].map{ |l| list_hash[l['name']] = l['id'] } -%>
+<% if lookup.error %>
+  <div class="flash error"><%= lookup.error %></div>
+<% end %>
 
-            <%= select_tag("settings[list_id]", options_for_select(list_hash.to_a, settings['list_id']), :onchange => settings['list_id']) %>
-          </td>
-        </tr>
-      <% end -%>
-    <% rescue Exception => e -%>
-      <% flash[:error] = e.message -%>
-    <% end -%>
+<p>
+  <label for="settings_api_key">Mailchimp API Key</label>
+  <%= text_field_tag 'settings[api_key]', settings['api_key'], size: 50, autocomplete: 'off' %>
+</p>
 
-    <tr>
-      <th>Double Opt-in</th>
-      <td>
-          <%= check_box_tag "settings[double_optin]", true,
-          !!settings['double_optin'] %>
-      </td>
-    </tr>
-    <tr>
-      <th>Update Existing</th>
-      <td>
-          <%= check_box_tag "settings[update_existing]", true,
-          !!settings['update_existing'] %>
-      </td>
-    </tr>
-    <tr>
-      <th>Replace Interests</th>
-      <td>
-          <%= check_box_tag "settings[replace_interests]", true,
-          !!settings['replace_interests'] %>
-      </td>
-    </tr>
-    <tr>
-      <th>Send Welcome Email</th>
-      <td>
-          <%= check_box_tag "settings[send_welcome]", true,
-          !!settings['send_welcome'] %>
-      </td>
-    </tr>
+<% if lookup.api_key? && lists.any? %>
+  <p>
+    <label for="settings_list_id">Mailchimp List</label>
+    <%= select_tag 'settings[list_id]', options_for_select([['', '']] + lists, settings['list_id']) %>
+  </p>
+<% end %>
 
-  </tbody>
-</table>
+<p>
+  <label for="settings_double_optin">Double Opt-in</label>
+  <%= check_box_tag 'settings[double_optin]', true, settings['double_optin'].present? %>
+</p>
+<p>
+  <label for="settings_update_existing">Update Existing</label>
+  <%= check_box_tag 'settings[update_existing]', true, settings['update_existing'].present? %>
+</p>
 
-<% standard_user_fields = [] -%>
-<% user_fields = [] -%>
-<% merge_fields = [] -%>
-
-<% begin -%>
-<% if !settings['api_key'].nil? -%>
-  <% if !settings['api_key'].empty? && !settings['list_id'].empty? -%>
-    <% user_fields = [""] + CustomField.where(type: "UserCustomField").map(&:name).uniq.sort -%>
-    <% merge_vars = mailchimp.lists.merge_vars([settings['list_id']]) -%>
-    <% merge_fields = [""] + merge_vars['data'].first['merge_vars'].map{ |m| m['tag'] } -%>
-    <% merge_fields.delete("EMAIL") -%>
-    <% merge_fields.delete("FNAME") -%>
-    <% merge_fields.delete("LNAME") -%>
-    <% settings['merge_fields_count'] = merge_fields.count - 1 -%>
-  <% end -%>
-<% end -%>
-<% rescue Exception => e -%>
-  <% flash[:error] = e.message -%>
-<% end -%>
-
-<table cellspacing=5 width=300>
-  <tr>
-    <td align="center">
-      <strong>Mailchimp<br>Merge Field</strong>
-    </td>
-    <td align="center">
-      <strong>Redmine<br>User Field</strong>
-    </td>
-  </tr>
-
-<% i = 0 -%>
-<% while i < (merge_fields.count - 1) -%>
-  <% setting_merge_field = 'settings[merge_field_' + i.to_s + ']' -%>
-  <% setting_user_field = 'settings[user_field_' + i.to_s + ']' -%>
-  <tr>
-    <td align="center">
-      <%= select_tag(setting_merge_field,
-        options_for_select(merge_fields,
-          Setting.plugin_redmine_mailchimp["merge_field_" + i.to_s]),
-          :onchange => settings['merge_field_' + i.to_s]) %>
-    </td>
-    <td align="center">
-      <%= select_tag(setting_user_field,
-        options_for_select(user_fields,
-          Setting.plugin_redmine_mailchimp["user_field_" + i.to_s]),
-          :onchange => settings['user_field_' + i.to_s]) %>
-    </td>
-  </tr>
-  
-  <% i += 1 -%>
-<% end -%>
-
-</table>
+<% if tags.any? %>
+  <h3>Merge fields</h3>
+  <% tags.each_index do |i| %>
+    <p>
+      <label for="settings_merge_field_<%= i %>">Mailchimp merge field</label>
+      <%= select_tag "settings[merge_field_#{i}]", options_for_select(merge_tags, settings["merge_field_#{i}"]) %>
+      <%= select_tag "settings[user_field_#{i}]", options_for_select(user_fields, settings["user_field_#{i}"]) %>
+    </p>
+  <% end %>
+<% end %>
